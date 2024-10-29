@@ -1,4 +1,4 @@
-import math
+import helper.mqtt as mqtt
 from helper.observation import Observation
 
 class room_node :
@@ -6,11 +6,15 @@ class room_node :
         self.unique_id = 666
         self.room_number = "r533"
         self.observed_property = "Room Occupation"
+        mqtt.selector("pi-os/roomnode/shutdown",self.unique_id)
 
     '''
     def calibrate() function should go here.
     '''
 
+    '''
+    gets sign in from user will be replaced with nfc reader hopefully
+    '''
     def sign_in(self):
         first_name = input("enter first name: ")
         last_name = input("enter last name: ")
@@ -23,7 +27,11 @@ class room_node :
                 }
             }
         return student
+    
 
+    '''
+    Observation function, will hopefully be done manually when nfc reader happens
+    '''
     def observe(self):
         while True:
             print("========= Select option ========")
