@@ -45,14 +45,19 @@ class ParkingNode:
         self.results = queue.Queue()
 
     """
-    # Calibration function
-    # Specify how close a vehicle will be when the camera activates
+    # ========================================== CONFIGURATION METHODS ==========================================
+    # Calibrate the parking node: how close can a vehicle get before the camera takes a photo?
     """
     def calibrate(self):
         self.dist_threshold = float(input("How close is a car to the motion sensor when at rest? "))
         #GPIO.setup(self.GPIO_TRIG, GPIO.OUT)
 		#GPIO.setup(self.GPIO_ECHO, GPIO.IN)
 
+
+    ''' 
+    # ========================================== MEASUREMENT METHODS ==========================================
+    '''
+    
     ''' 
     # Observation function
     # Check a distance sensor for the presence of a new vehicle
