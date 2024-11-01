@@ -6,6 +6,7 @@ import paho.mqtt.client as mqtt
 def eclipse_setup(LWT_topic, unique_id):
     # Create the MQTT client object
     mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1)
+    mqtt_client.on_connect = on_connect
 
     # Define the client object's callback behaviors
     mqtt_client.will_set(LWT_topic, json.dumps({"message": "disconnected", "_sender_id": unique_id}), 1, False)
@@ -19,6 +20,7 @@ def on_connect(client):
     topic = "lospi-os/room"
     client.subscribe(topic)
     print(f"Subscribed to topic: {topic}")
+    return
 
     # Define the callback for when a message is received
     client.on_message = on_message
