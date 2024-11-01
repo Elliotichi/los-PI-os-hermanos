@@ -56,7 +56,7 @@ class room_node :
 						_has_result = self.sign_in()
                     )
                     print(observation.__repr__)
-                    self.mqtt_client.publish("lospios/room", observation.to_mqtt_payload())
+                    self.mqtt_client.publish("lospi-os/room", observation.to_mqtt_payload())
                 
                     
 
