@@ -25,11 +25,13 @@ class room_node :
         first_name = input("enter first name: ")
         last_name = input("enter last name: ")
         student_number = input("enter student number")
+        room_number = self.room_number
         student = {"Value":
                 {
                     "first_name" : first_name, 
                     "last_name" : last_name,
-                    "student_number" : student_number
+                    "student_number" : student_number,
+                    "room_number" : room_number
                 }
             }
         return student
