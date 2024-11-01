@@ -35,10 +35,6 @@ def eclipse_setup(LWT_topic, unique_id):
     # Define the client object's callback behaviors
     mqtt_client.will_set(LWT_topic, json.dumps({"message": "disconnected", "_sender_id": unique_id}), 1, False)
 
-    # Setup TLS for secure transmission
-    mqtt_client.tls_set(cert_reqs=ssl.CERT_REQUIRED, tls_version=ssl.PROTOCOL_TLSv1_2)
-    mqtt_client.tls_insecure_set(False)
-
     # Connect to the Eclipse Mosquitto broker
     mqtt_client.connect("test.mosquitto.org", 8883, 60)  # Use "test.mosquitto.org" for public broker
 
@@ -53,12 +49,12 @@ def selector(lwt_topic, unique_id):
         selection = input("Enter selection")
 
         if selection == "1":
-             rgu_setup(lwt_topic, unique_id)
-             break
+             client = rgu_setup(lwt_topic, unique_id)
+             return client
         
         elif selection == "2":
-             eclipse_setup(lwt_topic, unique_id)
-             break
+             client = eclipse_setup(lwt_topic, unique_id)
+             return client
         
         else:
              print("invalid selection")

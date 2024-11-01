@@ -6,7 +6,7 @@ class room_node :
         self.unique_id = 666
         self.room_number = "r533"
         self.observed_property = "Room Occupation"
-        mqtt.selector("pi-os/roomnode/shutdown",self.unique_id)
+        self.mqtt_client = mqtt.selector("lospi-os/room/shutdown",self.unique_id)
 
     '''
     def calibrate() function should go here.
@@ -47,6 +47,9 @@ class room_node :
 						_observed_property = self.observed_property,
 						_has_result = self.sign_in()
                     )
+                    print(observation.__repr__)
+                    self.mqtt_client.publish("lospios/room", observation.to_mqtt_payload())
+                
                     
 
                 case "2":
