@@ -4,13 +4,18 @@ from helper.observation import Observation
 class room_node :
     def __init__(self):
         self.unique_id = 666
-        self.room_number = "r533"
+        self.room_number
         self.observed_property = "Room Occupation"
         self.mqtt_client = mqtt.selector("lospi-os/room/shutdown",self.unique_id)
+        self.calibrate()
+        
 
     '''
     def calibrate() function should go here.
     '''
+    def calibrate(self): 
+        self.room_number = input("What is the room number?")
+            
 
     '''
     gets sign in from user will be replaced with nfc reader hopefully
