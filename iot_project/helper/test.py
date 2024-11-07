@@ -1,6 +1,4 @@
 import json
-import ssl
-
 import paho.mqtt.client as mqtt
 
 def eclipse_setup(LWT_topic, unique_id):
