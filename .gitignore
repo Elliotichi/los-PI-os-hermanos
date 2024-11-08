@@ -1,0 +1,5 @@
+node_modules
+*.pyc
+config.txt
+test_script.py
+eslint.config.mjs
