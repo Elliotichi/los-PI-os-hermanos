@@ -1,10 +1,13 @@
 import helper.mqtt as mqtt
 from helper.observation import Observation
+from helper.sensor import SensorNode
+from mfrc522 import SimpleMFRC522 as rfid
 
-class room_node :
+class room_node(SensorNode) :
     def __init__(self):
         self.unique_id = 666
         self.room_number = self.calibrate()
+        super().__init__(rfid())
         self.observed_property = "Room Occupation"
         self.mqtt_client = mqtt.selector("lospi-os/room/shutdown",self.unique_id)
         
