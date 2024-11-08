@@ -1,0 +1,11 @@
+{
+  "name": "lospi-os-server",
+  "version": "1.0.0",
+  "description": "A web server project collating and displaying selected data from the RGU campus sensor network.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "SAUL",
+  "license": "ISC"
+}
