@@ -1,80 +1,86 @@
 import helper.mqtt as mqtt
 from helper.observation import Observation
 from helper.sensor import SensorNode
-from mfrc522 import SimpleMFRC522 as rfid
+from mfrc522 import MFRC522
+import spidev
+import RPi.GPIO as GPIO
+import time
+import sys
 
 class room_node(SensorNode) :
     def __init__(self):
         self.unique_id = 666
         self.room_number = self.calibrate()
-        super().__init__(rfid())
+        super().__init__(MFRC522())
         self.observed_property = "Room Occupation"
         self.mqtt_client = mqtt.selector("lospi-os/room/shutdown",self.unique_id)
-        
+        self.card_present = False
+        self.previous_uid = None
+
 
     '''
     def calibrate() function should go here.
     '''
-    def calibrate(self): 
-        room = input("What is the room number?")
-        return room
+    def calibrate(self):
+       pass
+        # Empty - no calibration required, as the room number/name is part of super().name()
 
-            
-
-    '''
-    gets sign in from user will be replaced with nfc reader hopefully
-    '''
-    def sign_in(self):
-        first_name = input("enter first name: ")
-        last_name = input("enter last name: ")
-        student_number = input("enter student number")
-        room_number = self.room_number
-        student = {"Value":
-                {
-                    "first_name" : first_name, 
-                    "last_name" : last_name,
-                    "student_number" : student_number,
-                    "room_number" : room_number
-                }
-            }
-        return student
-    
 
     '''
-    Observation function, will hopefully be done manually when nfc reader happens
+    Observation function
     '''
     def observe(self):
-        while True:
-            print("========= Select option ========")
-            print("1: sign in")
-            print("2: close program")
-            selection = input("Enter here: ")
-            match selection :
-                case "1":
-                    observation = Observation(
-						_sender_id = self.unique_id,
-						_sender_name = self.room_number,
-						_feature_of_interest = "rgu", 
-						_observed_property = self.observed_property,
-						_has_result = self.sign_in()
-                    )
-                    print(observation.__repr__)
-                    self.mqtt_client.publish("lospi-os/room", observation.to_mqtt_payload())
-                
-                    
+        try:
+            print("Waiting for a tag...")
 
-                case "2":
-                    break
-
-                case _:
-                    print("invalid selection")
+            # Event loop
+            while True:
+                self.request_tag()
+                self.read_from_tag()
+        except KeyboardInterrupt:
+            self.sensor.StopAuth()
+            GPIO.cleanup()
+            sys.exit()
 
 
-    
-   
+    def request_tag(self):
+        reader = self.sensor
+        (status, TagType) = reader.Request(reader.PICC_REQIDL)
+
+        if status == reader.MI_OK:
+            (status, uid) = reader.Anticoll()
+            if status == reader.MI_OK and uid != self.previous_uid:
+                print(f"UID is {uid}")
+                self.card_present = True
+                self.previous_uid = uid
+
+                reader.SelectTag(uid)
+
+                print("Authenticating...")
+                status = reader.Authenticate(reader.PICC_AUTHENT1A, 11, [0xD3, 0xF7, 0xD3, 0xF7, 0xD3, 0xF7], uid)
+                print("Done w auth")
+
+
+
+    def read_from_tag(self):
+
+        reader = self.sensor
+        blocks = [8, 9, 10]
+        data = []
+        for block_num in blocks:
+            block_data = reader.ReadTag(block_num)
+            if block_data:
+                data+=block_data
+                print("Reading...")
+        if data:
+            print("".join(chr(i) for i in data))
+
+        reader.StopAuth()
+        GPIO.cleanup()
 
 
 
 
-    
-    
+
+
+

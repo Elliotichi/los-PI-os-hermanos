@@ -1,12 +1,13 @@
 import json
 import time
+import helper.mqtt as mqtt
 
 '''
 # Top level class for all sensor nodes (standardizes implementation)
 '''
 class SensorNode:
     def __init__(self, sensor):
-        self.get_name()
+        self.name()
         self.mqtt_client = None
         self.observed_property = None
         self.sensor = sensor
@@ -14,10 +15,7 @@ class SensorNode:
         #with open ("config.txt", "r") as file:
          #   self.deployment_id = file.readLine()
 
-
-
-
-    def get_name(self):
+    def name(self):
         self.name = input("Name this sensor: ")
 
 
