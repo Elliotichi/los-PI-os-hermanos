@@ -14,8 +14,8 @@ session = require("express-session")({
 });
 
 
-const url = "mongodb+srv://visionstitch_dev:<db_password>@lospi.usv87.mongodb.net/?retryWrites=true&w=majority&appName=lospi";
-const client = new MongoClient(url);
+const uri = "mongodb+srv://visionstitch_dev:D2bOoV70EXhn8PMT@lospi.usv87.mongodb.net/?retryWrites=true&w=majority&appName=lospi";
+const client = new MongoClient(uri);
 const dbname = 'lospi';
 
 
@@ -27,6 +27,8 @@ server.use(express.urlencoded({ extended: true }));
 var connectedSockets = {};
 var db;
 
+
+
 // Routes
 server.get("/", (req, res) => {
     // Landing page - should just be EJS template with a simple navbar & a search for room
@@ -37,8 +39,8 @@ io.on("connection", (socket) => {
     connectedSockets[socket.id] = socket;
 
     socket.on("room search", (room) => {
-        // Produce a heatmap of the room that has been searched by the client
-        // MongoDB query goes here? (overhead of rapid queries?)
+        // socket.emit() a heatmap of the room that has been searched by the client
+        // MongoDB query goes here? (overhead of rapid queries - consider a storage object)
     })
 
     socket.on("disconnect", () => {
