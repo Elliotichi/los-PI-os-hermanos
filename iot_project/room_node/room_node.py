@@ -31,13 +31,10 @@ class room_node(SensorNode) :
     '''
     def observe(self):
         i = 0
-
-        # Event loop
-        while True:
-            print(f"Poll {i}")
-            self.poll_and_auth()
-            time.sleep(0.5)
-            i+=1
+        print(f"Poll {i}")
+        self.poll_and_auth()
+        time.sleep(0.5)
+        i+=1
 
 
 
@@ -46,13 +43,12 @@ class room_node(SensorNode) :
         reader = self.sensor
 
         while status != reader.MI_OK:
-            print("polling...")
             (status, TagType) = reader.Request(reader.PICC_REQIDL)
-            
+
             if status != reader.MI_OK:
                 self._previous_uid = None
                 self._card_present = False
-        
+
             if status == reader.MI_OK:
                 print("anticoll...")
                 (status, uid) = reader.Anticoll()
@@ -60,13 +56,12 @@ class room_node(SensorNode) :
                     self._previous_uid = uid
                     print(f"UID is {uid}")
                     self.card_present = True
-                
-                    print("tag select...")
+
                     reader.SelectTag(uid)
 
                     print("Authenticating...")
                     status = reader.Authenticate(reader.PICC_AUTHENT1A, 11, [0xD3, 0xF7, 0xD3, 0xF7, 0xD3, 0xF7], uid)
-                    print(status)
+                    self.read_from_tag()
 
 
     def read_from_tag(self):
@@ -78,8 +73,10 @@ class room_node(SensorNode) :
             block_data = reader.ReadTag(block_num)
             if block_data:
                 data+=block_data
-        return data
+        print("".join(chr(i) for i in data))
+        time.sleep(5000)
 
+        return data
 
 
 

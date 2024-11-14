@@ -1,7 +1,7 @@
 import room_node.room_node as room
 
 '''
-# Script to create a Parking Node object, calibrate and run it
+# Script to create a Room Node object, calibrate and run it
 '''
 room_node = room.room_node()
 room_node.calibrate()
