@@ -3,6 +3,7 @@ from enum import Enum
 from helper.observation import Observation
 from helper.sensor import SensorNode
 from picamera2 import Picamera2
+import tracemalloc
 
 import easyocr
 import numpy as np
@@ -65,6 +66,7 @@ class ParkingNode(SensorNode):
     # Capture image (or use sample) & process in a separate thread
     '''
     def observe(self):
+
         print("Measuring distance...")
         executor = ThreadPoolExecutor(max_workers=1)
 
@@ -102,7 +104,12 @@ class ParkingNode(SensorNode):
     # Do OCR on license plate, add to queue
     '''
     def get_registration(self):
-        img = self.sensor.capture_array("main")
+        tracemalloc.start()
+
+        start_snap = tracemalloc.take_snapshot()
+
+        #img = self.sensor.capture_array("main")
+        img = cv2.imread("sample_reg.png")
 
         cv2.imshow(img)
         cv2.waitKey(0)
@@ -143,6 +150,16 @@ class ParkingNode(SensorNode):
 
             # Add to list of results
             self.results.put(result)
+
+            end_snap = tracemalloc.take_snapshot()
+
+            start_stats = start_snapshot.statistics("lineno")
+            end_stats = end_snap.statistics("lineno")
+
+            memory_diff = end_snapshot.compare_to(start_snapshot, "lineno")
+
+            total_allocated = sum(stat.size_diff for stat in memory_diff)
+            print(f"Total memory allocated between snaps: {total_allocated / 1024**2:.2f} MB")
 
 
     def ultrasonic_measure(self):

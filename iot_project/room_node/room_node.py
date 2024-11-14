@@ -1,85 +1,84 @@
 import helper.mqtt as mqtt
 from helper.observation import Observation
 from helper.sensor import SensorNode
-from mfrc522 import MFRC522
+from helper.mfrc522raw import MFRC522
 import spidev
-import RPi.GPIO as GPIO
+import RPi.GPIO
 import time
-import sys
 
 class room_node(SensorNode) :
     def __init__(self):
         self.unique_id = 666
-        self.room_number = self.calibrate()
         super().__init__(MFRC522())
         self.observed_property = "Room Occupation"
         self.mqtt_client = mqtt.selector("lospi-os/room/shutdown",self.unique_id)
-        self.card_present = False
-        self.previous_uid = None
+
+        # Internal state variables used to streamline NFC reading
+        # User might place card on the reader for too long, leading to an immediate check-in and check-out
+        self._previous_uid = None
+        self._card_present = False
 
 
     '''
     def calibrate() function should go here.
     '''
     def calibrate(self):
-       pass
-        # Empty - no calibration required, as the room number/name is part of super().name()
-
+        room = input("What is the room number?")
+        self.observed_property = room+" occupancy"
 
     '''
     Observation function
     '''
     def observe(self):
-        try:
-            print("Waiting for a tag...")
+        i = 0
 
-            # Event loop
-            while True:
-                self.request_tag()
-                self.read_from_tag()
-        except KeyboardInterrupt:
-            self.sensor.StopAuth()
-            GPIO.cleanup()
-            sys.exit()
+        # Event loop
+        while True:
+            print(f"Poll {i}")
+            self.poll_and_auth()
+            time.sleep(0.5)
+            i+=1
 
 
-    def request_tag(self):
+
+    def poll_and_auth(self):
+        status = None
         reader = self.sensor
-        (status, TagType) = reader.Request(reader.PICC_REQIDL)
 
-        if status == reader.MI_OK:
-            (status, uid) = reader.Anticoll()
-            if status == reader.MI_OK and uid != self.previous_uid:
-                print(f"UID is {uid}")
-                self.card_present = True
-                self.previous_uid = uid
+        while status != reader.MI_OK:
+            print("polling...")
+            (status, TagType) = reader.Request(reader.PICC_REQIDL)
+            
+            if status != reader.MI_OK:
+                self._previous_uid = None
+                self._card_present = False
+        
+            if status == reader.MI_OK:
+                print("anticoll...")
+                (status, uid) = reader.Anticoll()
+                if status == reader.MI_OK and uid != self._previous_uid:
+                    self._previous_uid = uid
+                    print(f"UID is {uid}")
+                    self.card_present = True
+                
+                    print("tag select...")
+                    reader.SelectTag(uid)
 
-                reader.SelectTag(uid)
-
-                print("Authenticating...")
-                status = reader.Authenticate(reader.PICC_AUTHENT1A, 11, [0xD3, 0xF7, 0xD3, 0xF7, 0xD3, 0xF7], uid)
-                print("Done w auth")
-
+                    print("Authenticating...")
+                    status = reader.Authenticate(reader.PICC_AUTHENT1A, 11, [0xD3, 0xF7, 0xD3, 0xF7, 0xD3, 0xF7], uid)
+                    print(status)
 
 
     def read_from_tag(self):
-
         reader = self.sensor
+
         blocks = [8, 9, 10]
         data = []
         for block_num in blocks:
             block_data = reader.ReadTag(block_num)
             if block_data:
                 data+=block_data
-                print("Reading...")
-        if data:
-            print("".join(chr(i) for i in data))
-
-        reader.StopAuth()
-        GPIO.cleanup()
-
-
-
+        return data
 
 
 
