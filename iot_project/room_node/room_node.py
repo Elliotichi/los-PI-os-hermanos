@@ -5,10 +5,11 @@ from helper.mfrc522raw import MFRC522
 import spidev
 import RPi.GPIO
 import time
+import random
 
 class room_node(SensorNode) :
     def __init__(self):
-        self.unique_id = 666
+        self.unique_id = random.randint(1, 10000000) 
         super().__init__(MFRC522())
         self.observed_property = "Room Occupation"
         self.mqtt_client = mqtt.selector("lospi-os/room/shutdown",self.unique_id)
@@ -30,13 +31,19 @@ class room_node(SensorNode) :
     Observation function
     '''
     def observe(self):
-        i = 0
-        print(f"Poll {i}")
-        self.poll_and_auth()
-        time.sleep(0.5)
-        i+=1
-
-
+        status = self.poll_and_auth()
+        if status == 1:
+            tag_data = self.read_from_tag()
+            
+            obs = Observation(
+                _sender_id = self.unique_id,
+                _sender_name = self.name,
+                _feature_of_interest = self.feature_of_interest,
+                _observed_property = self.observed_property,
+                _haxs_result = {"value": tag_data, "units": "string"}   
+            )
+            
+            self.mqtt_client.publish(f"{self.deployment_id}/{self.room}", obs.to_mqtt_payload())
 
     def poll_and_auth(self):
         status = None
@@ -50,18 +57,15 @@ class room_node(SensorNode) :
                 self._card_present = False
 
             if status == reader.MI_OK:
-                print("anticoll...")
                 (status, uid) = reader.Anticoll()
                 if status == reader.MI_OK and uid != self._previous_uid:
                     self._previous_uid = uid
-                    print(f"UID is {uid}")
                     self.card_present = True
 
                     reader.SelectTag(uid)
 
-                    print("Authenticating...")
                     status = reader.Authenticate(reader.PICC_AUTHENT1A, 11, [0xD3, 0xF7, 0xD3, 0xF7, 0xD3, 0xF7], uid)
-                    self.read_from_tag()
+                    return status
 
 
     def read_from_tag(self):
