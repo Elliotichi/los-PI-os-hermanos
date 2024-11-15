@@ -9,10 +9,11 @@ import random
 
 class room_node(SensorNode) :
     def __init__(self):
-        self.unique_id = random.randint(1, 10000000) 
+        self.unique_id = random.randint(1, 10000000)
         super().__init__(MFRC522())
-        self.observed_property = "Room Occupation"
-        self.mqtt_client = mqtt.selector("lospi-os/room/shutdown",self.unique_id)
+        self.feature_of_interest = "Robert Gordon University"
+
+        #self.mqtt_client = mqtt.selector("lospi-os/room/shutdown",self.unique_id)
 
         # Internal state variables used to streamline NFC reading
         # User might place card on the reader for too long, leading to an immediate check-in and check-out
@@ -33,20 +34,21 @@ class room_node(SensorNode) :
     def observe(self):
         while True:
             status = self.poll_and_auth()
-            if status == 0:
+            if status == self.sensor.MI_OK:
                 tag_data = self.read_from_tag()
-                data_to_send, validate = make_student_obj(tag_data)
-                
-                if validate == True:
-                    obs = Observation(
-                        _sender_id = self.unique_id,
-                        _sender_name = self.name,
-                        _feature_of_interest = self.feature_of_interest,
-                        _observed_property = self.observed_property,
-                        _has_result = {"value": data_to_send, "units": "string"}   
-                    )
-            
-                    self.mqtt_client.publish(f"{self.deployment_id}/{self.room}", obs.to_mqtt_payload())
+                #if tag_data is not None:
+                    #data_to_send, validate = make_student_obj(tag_data)
+
+                #if validate == True:
+                obs = Observation(
+                    _sender_id = self.unique_id,
+                    _sender_name = self.name,
+                    _feature_of_interest = self.feature_of_interest,
+                    _observed_property = self.observed_property,
+                    _has_result = {"value": data_to_send, "units": "string"}
+                )
+
+                self.mqtt_client.publish(f"{self.deployment_id}/{self.room}", obs.to_mqtt_payload())
 
     def poll_and_auth(self):
         status = None
@@ -75,15 +77,24 @@ class room_node(SensorNode) :
         reader = self.sensor
 
         blocks = [8, 9, 10]
+
         data = []
         for block_num in blocks:
             block_data = reader.ReadTag(block_num)
             if block_data:
                 data+=block_data
-        print("".join(chr(i) for i in data))
-        data_to_add = make_student_obj(data)
 
-        return data
+        print(data)
+        i = 0
+        for unicode_val in data:
+            data[i] = chr(unicode_val)
+            i+=1
+
+        data = "".join(data[:-1])
+        print(data)
+        reader.StopAuth()
+
+
 
 
 def make_student_obj(array):
@@ -91,8 +102,7 @@ def make_student_obj(array):
     try:
         student = {"firstname":array[0], "lastname":array[1], "maticulation_number":array[2]}
         validate = True
-        return student 
+        return student, validate
     except:
         validate = False
         print("invalid Tag")
-    
