@@ -1,0 +1,37 @@
+nav{
+    background-color: #7b1a7b;
+}
+
+#title{
+    padding: 10px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    color:white
+}
+
+#log_in{
+    background-color: white;
+    padding-right: 10px;
+
+}
+
+
+
+#Search_button{
+    
+    background-color: white;
+}
+
+#quick_Search ul{
+    text-align: center;
+    
+    position: center;
+}
+
+#popBtn_1,#popBtn_2,#popBtn_3{
+    border: black, 10px;
+    background-color: #7b1a7b;
+   
+    color: white;
+    border-radius: 10px;
+    min-width: 100px;
+}
