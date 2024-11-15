@@ -31,19 +31,22 @@ class room_node(SensorNode) :
     Observation function
     '''
     def observe(self):
-        status = self.poll_and_auth()
-        if status == 1:
-            tag_data = self.read_from_tag()
+        while True:
+            status = self.poll_and_auth()
+            if status == 0:
+                tag_data = self.read_from_tag()
+                data_to_send, validate = make_student_obj(tag_data)
+                
+                if validate == True:
+                    obs = Observation(
+                        _sender_id = self.unique_id,
+                        _sender_name = self.name,
+                        _feature_of_interest = self.feature_of_interest,
+                        _observed_property = self.observed_property,
+                        _has_result = {"value": data_to_send, "units": "string"}   
+                    )
             
-            obs = Observation(
-                _sender_id = self.unique_id,
-                _sender_name = self.name,
-                _feature_of_interest = self.feature_of_interest,
-                _observed_property = self.observed_property,
-                _haxs_result = {"value": tag_data, "units": "string"}   
-            )
-            
-            self.mqtt_client.publish(f"{self.deployment_id}/{self.room}", obs.to_mqtt_payload())
+                    self.mqtt_client.publish(f"{self.deployment_id}/{self.room}", obs.to_mqtt_payload())
 
     def poll_and_auth(self):
         status = None
@@ -78,9 +81,18 @@ class room_node(SensorNode) :
             if block_data:
                 data+=block_data
         print("".join(chr(i) for i in data))
-        time.sleep(5000)
+        data_to_add = make_student_obj(data)
 
         return data
 
 
-
+def make_student_obj(array):
+    validate = None
+    try:
+        student = {"firstname":array[0], "lastname":array[1], "maticulation_number":array[2]}
+        validate = True
+        return student 
+    except:
+        validate = False
+        print("invalid Tag")
+    
