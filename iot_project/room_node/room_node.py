@@ -6,36 +6,45 @@ import spidev
 import RPi.GPIO
 import time
 import random
+import pymongo
+
 
 class room_node(SensorNode) :
     def __init__(self):
         self.unique_id = random.randint(1, 10000000)
         super().__init__(MFRC522())
         self.feature_of_interest = "Robert Gordon University"
-
-        #self.mqtt_client = mqtt.selector("lospi-os/room/shutdown",self.unique_id)
+        self.room = None
+        self.deployment_id = None
+        self.mqtt_client = mqtt.eclipse_setup()
 
         # Internal state variables used to streamline NFC reading
         # User might place card on the reader for too long, leading to an immediate check-in and check-out
         self._previous_uid = None
         self._card_present = False
+        
+        self.cluster = self.setup_mongo()["lospi-db"]["students"]
 
 
     '''
-    def calibrate() function should go here.
+    defines the room that the node is attached to 
     '''
     def calibrate(self):
-        room = input("What is the room number?")
-        self.observed_property = room+" occupancy"
+        with open("config.txt", "r") as file:
+            self.deployment_id = file.readline()
+        self.room = input("What is the room number?")
+        self.observed_property = self.room+" occupancy"
 
     '''
-    Observation function
+    defines the observation loop
+    calls the respective functions
     '''
     def observe(self):
         while True:
             status = self.poll_and_auth()
             if status == self.sensor.MI_OK:
                 tag_data = self.read_from_tag()
+                print(tag_data)
                 #if tag_data is not None:
                     #data_to_send, validate = make_student_obj(tag_data)
 
@@ -45,11 +54,32 @@ class room_node(SensorNode) :
                     _sender_name = self.name,
                     _feature_of_interest = self.feature_of_interest,
                     _observed_property = self.observed_property,
-                    _has_result = {"value": data_to_send, "units": "string"}
+                    _has_result = {"matric":tag_data,"room":self.room, "scan_time":time.localtime(), "units": "string"}
                 )
 
                 self.mqtt_client.publish(f"{self.deployment_id}/{self.room}", obs.to_mqtt_payload())
 
+    '''
+    establishes a mongoDB
+    '''
+    def setup_mongo(self):
+        # DATABASE: set up a connection, tls enabled, etc
+        CONN_STRING = "mongodb+srv://visionstitch_dev:LosHermanos58@lospi.usv87.mongodb.net/?retryWrites=true&w=majority&appName=lospi"
+        cluster = pymongo.MongoClient(
+            CONN_STRING,
+            server_api=pymongo.server_api.ServerApi(
+            version="1", strict=True, deprecation_errors=True
+            ),
+            tls=True,
+        )
+        return cluster
+
+
+        
+    '''
+    authenticates that the RFID tag placed on the reader is valid
+    ensures the tag is not the same tag placed before
+    '''
     def poll_and_auth(self):
         status = None
         reader = self.sensor
@@ -72,7 +102,9 @@ class room_node(SensorNode) :
                     status = reader.Authenticate(reader.PICC_AUTHENT1A, 11, [0xD3, 0xF7, 0xD3, 0xF7, 0xD3, 0xF7], uid)
                     return status
 
-
+    '''
+    Retrieves data from the RFID tag using the RFID scanner
+    '''
     def read_from_tag(self):
         reader = self.sensor
 
@@ -89,20 +121,20 @@ class room_node(SensorNode) :
         for unicode_val in data:
             data[i] = chr(unicode_val)
             i+=1
+        try:
+            data = "".join(data[:-1])
+            split_data = data.split(",")
+            student_number = split_data[1]
+            return student_number
+        
+        except:
+            print("Tag invalid")
 
-        data = "".join(data[:-1])
-        print(data)
+        print(student_number)
         reader.StopAuth()
 
 
 
 
-def make_student_obj(array):
-    validate = None
-    try:
-        student = {"firstname":array[0], "lastname":array[1], "maticulation_number":array[2]}
-        validate = True
-        return student, validate
-    except:
-        validate = False
-        print("invalid Tag")
+
+    
