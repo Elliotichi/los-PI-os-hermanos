@@ -40,6 +40,13 @@ nav{
     background-color: #7b1a7b;
 }
 
+
+#title{
+    padding: 10px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    color:white
+}
+
 #log_in{
     background-color: white;
     padding-right: 10px;
@@ -54,9 +61,21 @@ nav{
     text-align: center;
     height:10vh;
     width:10vh;
+    
+    
+}
+
+#ps_title{
+    text-align: center;
+    padding: 10px;
+    
+
+}
+#quick_Search li{
+    padding: 10px;
     border: black, 10px;
     background-color: #7b1a7b;
-   
+    display: inline-block;
     color: white;
     border-radius: 10px;
     min-width: 100px;
