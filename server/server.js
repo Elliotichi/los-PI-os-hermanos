@@ -30,7 +30,7 @@ var db;
 // Routes
 server.get("/", (req, res) => {
     // Landing page - should just be EJS template with a simple navbar & a search for room
-    res.render("pages/index")
+    res.render("pages/home")
 })
 
 /*
@@ -94,6 +94,17 @@ io.on("connection", (socket) => {
     connectedSockets[socket.id] = socket;
 
     socket.on("room search", (room) => {
+        let in_room = 0;
+        const cursor = db.collection("check_ins").find({ 
+            check_out_time: { "$eq": "" },
+            room: room
+        });
+        
+        cursor.next((error, check_in) => {
+            if (error) return handling(error);
+            in_room++;
+
+        });
         // socket.emit() a heatmap of the room that has been searched by the client
         // MongoDB query goes here? (overhead of rapid queries - consider a storage object)
     })

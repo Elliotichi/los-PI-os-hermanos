@@ -70,7 +70,7 @@ def main():
 
 	if node_type == "Web Server":
 		try:
-			subprocess.run(["node", "web_app/server.js"])
+			subprocess.run(["node", "server/server.js"])
 		except KeyboardInterrupt:
 			quit()
 

@@ -2,6 +2,19 @@ let socket = io();
 let charts = {};
 
 $(function () {
+
+    $("#btn_N9").on("click", function () {
+        socket.emit("room search", "N9");
+    });
+
+    $("#btn_N533").on("click", function () {
+        socket.emit("room search", "N533");
+    });
+
+    $("#btn_N527").on("click", function () {
+        socket.emit("room search", "N527");
+    });
+
     
     /*
     * When the user connects, they receive a list of observations stored on the server
