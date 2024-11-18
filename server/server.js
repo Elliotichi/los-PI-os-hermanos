@@ -79,11 +79,14 @@ server.get("/report", async (req, res) => {
 
     let still_in_building = [];
     const cursor = db.collection("check_ins").find({ check_out_time: { "$eq": null } });
-    cursor.next((error, check_in) => {
-        if (error) return handling(error);
+
+
+    for await (const check_in of cursor) {
+        console.table(check_in);
         still_in_building.push(check_in);
-        return res.render("pages/report", { data: still_in_building })
-    });
+    }
+
+    return res.render("pages/report", { data: still_in_building })
 })
 
 // Websockets
@@ -167,14 +170,14 @@ async function get_peak_occupancies(result) {
 
 
 async function get_occupancies(room) {
-        /**
-     * Get occupancies for each hour interval of the current day
-     * @param {String} room - a string representing a room search
-     */
+    /**
+ * Get occupancies for each hour interval of the current day
+ * @param {String} room - a string representing a room search
+ */
     const today = new Date();
-    today.setHours(0, 0, 0, 0); 
+    today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1); 
+    tomorrow.setDate(today.getDate() + 1);
 
     // Aggregation pipeline - queries for the current day's check-ins in the room, projects & groups by (indexed) hours
     const pipeline = [
@@ -193,9 +196,9 @@ async function get_occupancies(room) {
                 check_in_hour: { $hour: "$check_in_time" },
                 check_out_hour: {
                     $cond: [
-                        { $ifNull: ["$check_out_time", false] }, 
+                        { $ifNull: ["$check_out_time", false] },
                         { $hour: "$check_out_time" },
-                        23, 
+                        23,
                     ],
                 },
             },
