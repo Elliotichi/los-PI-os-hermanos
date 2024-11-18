@@ -41,7 +41,7 @@ class room_node(SensorNode) :
         while True:
             status = self.poll_and_auth()
             if status == self.sensor.MI_OK:
-                tag_data = self.read_from_tag()
+                tag_data, validate = self.read_from_tag()
                 
                 #if tag_data is not None:
                     #data_to_send, validate = make_student_obj(tag_data)
@@ -125,7 +125,8 @@ class room_node(SensorNode) :
             print(student_number)
             student = self.cluster.find_one({"matriculation_no":student_number})
             print(student)
-            return student
+            validate = True
+            return student, validate
         
         except:
             print("Tag invalid")
