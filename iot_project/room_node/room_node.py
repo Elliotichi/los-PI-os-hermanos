@@ -7,6 +7,7 @@ import RPi.GPIO
 import time
 import random
 import pymongo
+import datetime
 
 
 class room_node(SensorNode) :
@@ -55,11 +56,10 @@ class room_node(SensorNode) :
                     _sender_name = self.name,
                     _feature_of_interest = self.feature_of_interest,
                     _observed_property = self.observed_property,
-                    _has_result = {"student":tag_data,"room":self.room, "scan_time":time.localtime(), "units": "string"}
+                    _has_result = {"student":tag_data,"room":self.room, "scan_time":datetime.datetime.now(), "units": "string"}
                 )
 
                 self.mqtt_client.publish(f"{self.deployment_id}/{self.room}", obs.to_mqtt_payload())
-
     '''
     establishes a mongoDB
     '''
@@ -125,7 +125,7 @@ class room_node(SensorNode) :
             split_data = data.split(",")
             student_number = split_data[1]
             print(student_number)
-            student = self.cluster.find_one({"matric_number":student_number})
+            student = self.cluster.find_one({"matriculation_no":student_number})
             print(student)
             return student
         
