@@ -42,7 +42,8 @@ class room_node(SensorNode) :
             status = self.poll_and_auth()
             if status == self.sensor.MI_OK:
                 tag_data = self.read_from_tag()
-                
+                self.sensor.StopAuth()
+            
                 #if tag_data is not None:
                     #data_to_send, validate = make_student_obj(tag_data)
                     
@@ -53,9 +54,7 @@ class room_node(SensorNode) :
                     _observed_property = self.observed_property,
                     _has_result = {"student":tag_data,"room":self.room, "scan_time":datetime.datetime.now(), "units": "string"}
                 )
-                
-                print(self.mqtt_client)
-                
+                                
                 
                 self.mqtt_client.publish(f"{self.deployment_id}/room", obs.to_mqtt_payload())
     '''
@@ -129,9 +128,6 @@ class room_node(SensorNode) :
         
         except:
             print("Tag invalid")
-
-        print(student_number)
-        reader.StopAuth()
 
 
 
