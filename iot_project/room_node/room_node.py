@@ -15,7 +15,6 @@ class room_node(SensorNode) :
         super().__init__(MFRC522())
         self.feature_of_interest = "Robert Gordon University"
         self.room = None
-        self.deployment_id = None
         
 
         # Internal state variables used to streamline NFC reading
@@ -54,8 +53,11 @@ class room_node(SensorNode) :
                     _observed_property = self.observed_property,
                     _has_result = {"student":tag_data,"room":self.room, "scan_time":datetime.datetime.now(), "units": "string"}
                 )
-
-                self.mqtt_client.publish(f"{self.deployment_id}/{self.room}", obs.to_mqtt_payload())
+                
+                print(self.mqtt_client)
+                
+                
+                self.mqtt_client.publish(f"{self.deployment_id}/room", obs.to_mqtt_payload())
     '''
     establishes a mongoDB
     '''
