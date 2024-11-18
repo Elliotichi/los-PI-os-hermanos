@@ -41,23 +41,21 @@ class room_node(SensorNode) :
         while True:
             status = self.poll_and_auth()
             if status == self.sensor.MI_OK:
-                tag_data = self.read_from_tag()
-                
+                tag_data, validate = self.read_from_tag()
+                self.sensor.StopAuth()
+            
                 #if tag_data is not None:
                     #data_to_send, validate = make_student_obj(tag_data)
-                    
-                obs = Observation(
-                    _sender_id = self.name,
-                    _sender_name = self.name,
-                    _feature_of_interest = self.feature_of_interest,
-                    _observed_property = self.observed_property,
-                    _has_result = {"student":tag_data,"room":self.room, "scan_time":datetime.datetime.now(), "units": "string"}
-                )
-                
-                print(self.mqtt_client)
-                
-                
-                self.mqtt_client.publish(f"{self.deployment_id}/room", obs.to_mqtt_payload())
+                if validate == True:
+                    obs = Observation(
+                        _sender_id = self.name,
+                        _sender_name = self.name,
+                        _feature_of_interest = self.feature_of_interest,
+                        _observed_property = self.observed_property,
+                        _has_result = {"student":tag_data,"room":self.room, "scan_time":datetime.datetime.now(), "units": "string"}
+                    )
+    
+                    self.mqtt_client.publish(f"{self.deployment_id}/room", obs.to_mqtt_payload())
     '''
     establishes a mongoDB
     '''
@@ -125,13 +123,11 @@ class room_node(SensorNode) :
             print(student_number)
             student = self.cluster.find_one({"matriculation_no":student_number})
             print(student)
-            return student
+            validate = True
+            return student, validate
         
         except:
             print("Tag invalid")
-
-        print(student_number)
-        reader.StopAuth()
 
 
 
