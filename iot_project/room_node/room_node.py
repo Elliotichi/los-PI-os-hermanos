@@ -22,7 +22,8 @@ class room_node(SensorNode) :
         # User might place card on the reader for too long, leading to an immediate check-in and check-out
         self._previous_uid = None
         self._card_present = False
-        
+
+        # used to connect to the database of existing students.
         self.cluster = self.setup_mongo()["lospi-db"]["students"]
 
 
@@ -54,7 +55,7 @@ class room_node(SensorNode) :
                     _sender_name = self.name,
                     _feature_of_interest = self.feature_of_interest,
                     _observed_property = self.observed_property,
-                    _has_result = {"matric":tag_data,"room":self.room, "scan_time":time.localtime(), "units": "string"}
+                    _has_result = {"student":tag_data,"room":self.room, "scan_time":time.localtime(), "units": "string"}
                 )
 
                 self.mqtt_client.publish(f"{self.deployment_id}/{self.room}", obs.to_mqtt_payload())
@@ -73,8 +74,6 @@ class room_node(SensorNode) :
             tls=True,
         )
         return cluster
-
-
         
     '''
     authenticates that the RFID tag placed on the reader is valid
@@ -125,7 +124,10 @@ class room_node(SensorNode) :
             data = "".join(data[:-1])
             split_data = data.split(",")
             student_number = split_data[1]
-            return student_number
+            print(student_number)
+            student = self.cluster.find_one({"matric_number":student_number})
+            print(student)
+            return student
         
         except:
             print("Tag invalid")
