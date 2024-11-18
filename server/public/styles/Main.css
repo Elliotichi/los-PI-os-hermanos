@@ -57,7 +57,7 @@ nav{
     background-color: white;
 }
 
-#btn_N9, #btn_N533, #btn_N527{
+.room_button{
     text-align: center;
     height:10vh;
     width:10vh;
@@ -71,6 +71,7 @@ nav{
     
 
 }
+
 #quick_Search li{
     padding: 10px;
     border: black, 10px;
