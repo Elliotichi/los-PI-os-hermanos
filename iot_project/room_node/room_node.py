@@ -43,13 +43,12 @@ class room_node(SensorNode) :
             status = self.poll_and_auth()
             if status == self.sensor.MI_OK:
                 tag_data = self.read_from_tag()
-                print(tag_data)
+                
                 #if tag_data is not None:
                     #data_to_send, validate = make_student_obj(tag_data)
-
-                #if validate == True:
+                    
                 obs = Observation(
-                    _sender_id = self.unique_id,
+                    _sender_id = self.name,
                     _sender_name = self.name,
                     _feature_of_interest = self.feature_of_interest,
                     _observed_property = self.observed_property,
