@@ -12,12 +12,11 @@ import datetime
 
 class room_node(SensorNode) :
     def __init__(self):
-        self.unique_id = random.randint(1, 10000000)
         super().__init__(MFRC522())
         self.feature_of_interest = "Robert Gordon University"
         self.room = None
         self.deployment_id = None
-        self.mqtt_client = mqtt.eclipse_setup()
+        
 
         # Internal state variables used to streamline NFC reading
         # User might place card on the reader for too long, leading to an immediate check-in and check-out
@@ -32,8 +31,6 @@ class room_node(SensorNode) :
     defines the room that the node is attached to 
     '''
     def calibrate(self):
-        with open("config.txt", "r") as file:
-            self.deployment_id = file.readline()
         self.room = input("What is the room number?")
         self.observed_property = self.room+" occupancy"
 

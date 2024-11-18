@@ -36,7 +36,6 @@ class ParkingNode(SensorNode):
     def __init__(self):
         self.name = "Parking node"
         super().__init__(Picamera2())
-        super().mqtt_setup(f"{self.deployment_id}/parking")
         self.observed_property = "Car registration"
         self.state = CarSensorState.NO_CAR
         self.dist_threshold = None

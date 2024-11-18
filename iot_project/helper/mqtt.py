@@ -25,5 +25,5 @@ def eclipse_setup():
     return mqtt_client
 
 
-def on_mqtt_connect():
+def on_mqtt_connect(client, userdata, flags, rc):
      print("Connected to broker!")

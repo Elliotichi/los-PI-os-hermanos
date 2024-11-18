@@ -11,13 +11,10 @@ class SensorNode:
         self.mqtt_client = None
         self.observed_property = None
         self.sensor = sensor
-
-        with open ("config.txt", "r") as file:
-           self.deployment_id = file.readLine()
-
-    def mqtt_setup(self):
-       self.mqtt_client = mqtt.eclipse_setup()
     
+        self.mqtt_client = mqtt.eclipse_setup()
+        with open ("config.txt", "r") as file:
+           self.deployment_id = file.readline()    
     
     def name(self):
         self.name = input("Name this sensor: ")
