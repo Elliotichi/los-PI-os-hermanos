@@ -11,7 +11,7 @@ except singleton.SingleInstanceException: exit()
 
 # Dict for easy file pathing
 scripts = {
-	"Hub Node": "iot_project/hub_script.py",  
+	"Hub Node": "iot_project/hub_node/hub_node.py",  
 	"Berth Node" : "iot_project/room_script.py",
 	"Weather Node": "iot_project/parking.py", 
 	"Web Server": "server/server.js"
