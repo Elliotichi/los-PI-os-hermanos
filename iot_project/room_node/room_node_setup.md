@@ -8,6 +8,7 @@ RFID Tag
 ## Software
 Python 3 or later
 
+## setup steps
 - ### Run Setup.py in the root folder
 - ### Enter deployment ID 
   - #### this should be consistent with any other devices you have setup
