@@ -10,7 +10,7 @@ Python 3 or later
 
 ### - Run Setup.py in the root folder
 ### - Enter deployment ID 
-#### -- this should be consistent with any other devices you have setup
+- ####  this should be consistent with any other devices you have setup
 ### - select "2" in the options menu
 ### - enter the room number associated with the scanner
 #### - E.G N533, N534
