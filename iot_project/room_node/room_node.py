@@ -43,7 +43,6 @@ class room_node(SensorNode) :
             if status == self.sensor.MI_OK:
                 try:
                     tag_data, validate = self.read_from_tag()
-                    self.sensor.StopAuth()
             
                     #if tag_data is not None:
                         #data_to_send, validate = make_student_obj(tag_data)
@@ -59,6 +58,9 @@ class room_node(SensorNode) :
                         self.mqtt_client.publish(f"{self.deployment_id}/room", obs.to_mqtt_payload())
                 except:
                     print("tag failed to scan try again")
+                finally:
+                    self.sensor.StopAuth()
+
     '''
     establishes a mongoDB
     '''
