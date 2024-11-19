@@ -4,6 +4,14 @@
     flex-direction:column;
 }
 
+
+@media (max-width: 600px) {
+    .main-container {
+        width: 90%;
+        padding: 0.5rem
+    } 
+}
+
 #main-body-container {
     width:100%;
     height:100vh;
@@ -12,11 +20,26 @@
     flex-direction:row;
 }
 
+@media (max-width: 600px) {
+    #main-body-container {
+        justify-content: space-between;
+    }
+}
+
 #sidebar-container {
     width:20%;
     flex-direction:column;
     background-color:lightgray;
+    aspect-ratio: 2/1; /* Maintains aspect ratio*/
 }
+
+@media (max-width: 600px) {
+    .sidebar-container {
+        width: 11%;
+        padding: 0.5rem
+    } 
+}
+
 
 #sidebar {
     display:flex;
@@ -47,6 +70,13 @@ nav{
     color:white
 }
 
+@media only screen and (max-width: 600px) {
+    .title {
+      font-size: 30px;
+    }
+  }
+
+
 #log_in{
     background-color: white;
     padding-right: 10px;
@@ -65,11 +95,24 @@ nav{
     
 }
 
+@media only screen and (max-width: 600px) {
+    .room_button {
+      text-align: justify;
+      height: 4vh;
+      width: 4vh;
+    }
+  }
+
 #ps_title{
     text-align: center;
     padding: 10px;
-    
+}
 
+@media (max-width: 600px) {
+    .ps_title {
+        text-align: justify;
+        padding: 0.5rem
+    } 
 }
 
 #quick_Search li{
@@ -80,4 +123,11 @@ nav{
     color: white;
     border-radius: 10px;
     min-width: 100px;
+}
+
+@media (max-width: 600px) {
+    .quick_Search li {
+        padding: 0.5rem;
+        border: black, 4px;
+    } 
 }
