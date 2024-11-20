@@ -19,6 +19,7 @@ import queue
 import RPi.GPIO
 import tracemalloc
 import pymongo
+import datetime
 
 class CarSensorState(Enum):
     """
@@ -112,10 +113,16 @@ class ParkingNode(SensorNode):
                     print(
                         "A result has been processed and is waiting in the queue for MQTT send"
                     )
-                    # publish etc
+                    obs = Observation(
+                            _sender_id = self.name,
+                            _sender_name = self.name,
+                            _feature_of_interest = self.feature_of_interest,
+                            _observed_property = self.observed_property,
+                            _has_result = {"registration":reg, "units": "string"}
+                        )
+                    self.mqtt_client.publish(f"{self.deployment_id}/parking", obs.to_mqtt_payload())
 
                 except queue.Empty:
-                    print("The results queue is still empty, nothing to send")
                     pass
 
                 time.sleep(1)

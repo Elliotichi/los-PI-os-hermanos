@@ -13,7 +13,7 @@ except singleton.SingleInstanceException: exit()
 scripts = {
 	"Hub Node": "iot_project/hub_node/hub_node.py",  
 	"Berth Node" : "iot_project/room_script.py",
-	"Weather Node": "iot_project/parking.py", 
+	"Weather Node": "iot_project/parking_script.py", 
 	"Web Server": "server/server.js"
 	}
 

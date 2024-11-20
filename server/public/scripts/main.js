@@ -8,7 +8,6 @@ $(function () {
         if (event.key == "Enter") {
             event.preventDefault();
             let searchTerm = $("#searchbar").val().toUpperCase();
-            console.log(searchTerm);
             socket.emit("room search", searchTerm);
         }
     });
@@ -25,12 +24,35 @@ $(function () {
         socket.emit("room search", "N527");
     });
 
+    $(".report-checkbox").on('change', function () {
+        const isChecked = $(this).is(':checked');
+
+        first_name = text.split(" ")[0];
+        last_name = text.split(" ")[1];
+
+        console.log(`${first_name} ${last_name}`);
+
+        if (isChecked) {
+            socket.emit("report checkin", { first_name: first_name, last_name: last_name });
+            console.log(`Checkbox changed: "${text}" is now checked`);
+        }
+    });
+
     $(".report-person").on("click", function (e) {
         if (!$(e.target).is(".report-checkbox")) {
             const $checkbox = $(this).find(".report-checkbox");
             $checkbox.prop("checked", !$checkbox.prop("checked"));
+            let nameSplit = $(this).text().trim().split(" ");
+
+            socket.emit("report checkin", {first_name:nameSplit[0], last_name:nameSplit[1]});
+
+            $(this).remove();
+            $(this).trigger("refresh");
         }
     });
+
+
+
 
     /*
     * When the user connects, they receive a list of observations stored on the server

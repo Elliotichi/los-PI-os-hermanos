@@ -1,5 +1,5 @@
 #sitelogo {
-    width: 20vw;
+    width: 15vw;
     margin: auto;
 }
 
@@ -52,6 +52,7 @@
 
 #main-container {
     width: 100%;
+    height:100%;
     display: flex;
     flex-direction: column;
 }
@@ -185,4 +186,31 @@ nav {
         padding: 0.5rem;
         border: black, 4px;
     }
+}
+
+
+#list-container {
+    overflow-y: auto;
+    flex-grow:1;
+    padding:10px;
+}
+
+#report-list {
+    list-style-type:none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+.report-person {
+    cursor: pointer; 
+    transition: background-color 0.3s ease; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 15px; 
+    margin-bottom: 10px; 
+    border: 1px solid #ddd; 
+    border-radius: 8px; 
+    background-color: #f9f9f9; 
 }
