@@ -4,8 +4,8 @@
 - the node uses an RFID reader to detect the presence of a tag (a student card), scanning a matriculation number on the card and logging their presence in a room, then fetches corresponding name from a database & sends to hub
 
 ## Candidate microcontrollers
-- Although prototyped using a Raspberry Pi 3b+, the node can be made compatible with any network-connected device capable of supplying 3V for the reader.
-- The Raspberry Pi 3b+ likely provides an excess of size, software overhead and power consumption for its intended purpose. As documented, a lower-power alternative could be used.
+- prototyped using a Raspberry Pi 3b+, but can be compatible with any network-connected device capable of supplying 3V for the reader.
+- Raspberry Pi 3b+ is bloated for its intended purpose (RFID + simple, relatively infrequent DB query) - a low-power alternative could be used, such as the ESP series. See documentation for more info. 
 
 ## Sensors and actuators
 - The node is currently programmed to use a RC522 RFID reader, a standard module used in this context. However, alternatives could be used, provided the implementation language has valid support.

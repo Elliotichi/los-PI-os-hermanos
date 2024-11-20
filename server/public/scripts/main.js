@@ -51,9 +51,6 @@ $(function () {
         }
     });
 
-
-
-
     /*
     * When the user connects, they receive a list of observations stored on the server
     * Create the corresponding chart if it doesn't exist, and render it with the data set
