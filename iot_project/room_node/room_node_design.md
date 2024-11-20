@@ -12,3 +12,4 @@
 
 ## Messaging protocols and technologies
 - MQTT was chosen for the deployment due to its lightness, helping to reduce the power consumption of the node devices, and for its extensive support by various programming languages (in this example, Python)
+- MongoDB was used for data querying and storage. Atlas offers a user-friendly UI and customizable tiers for organization needs, but a local database could be used in the ideal implementation.
