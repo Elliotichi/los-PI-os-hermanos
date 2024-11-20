@@ -3,14 +3,17 @@ import csv
 import json
 import paho.mqtt.client as mqtt
 import datetime
+import os
+
+from dotenv import load_dotenv
 
 # FILE MANAGEMENT: get the deployment id from config file
 # file_path = 'iot_project\hub_node\hub_node.csv'
-with open("config.txt", "r") as file:
-    deployment_id = file.readline()
 
-# DATABASE: set up a connection, tls enabled, etc
-CONN_STRING = "mongodb+srv://visionstitch_dev:LosHermanos58@lospi.usv87.mongodb.net/?retryWrites=true&w=majority&appName=lospi"
+load_dotenv()
+deployment_id = os.getenv("DEPLOYMENT_NAME")
+CONN_STRING = os.getenv("CONN_STRING")
+
 cluster = pymongo.MongoClient(
     CONN_STRING,
     server_api=pymongo.server_api.ServerApi(
@@ -26,7 +29,7 @@ parking_check_ins_collection = cluster["lospi-db"]["parking_check_ins"]
 
 def log_parking_check_in(check_in):
     """
-    Logs a parking check-in - caleld when a message is received on the "parking" topic
+    Logs a parking check-in - called when a message is received on the "parking" topic
     :param check_in: a dictionary containing the MQTT payload
     """
     current_time = datetime.datetime.now()
@@ -76,8 +79,8 @@ def log_check_in(check_in):
     if update_res.matched_count == 0:
         new_check_in = {
             "matriculation_no": check_in["_has_result"]["student"]["matriculation_no"],
-            "first_name":check_in["_has_result"]["student"]["first_name"],
-            "last_name":check_in["_has_result"]["student"]["last_name"],
+            "first_name": check_in["_has_result"]["student"]["first_name"],
+            "last_name": check_in["_has_result"]["student"]["last_name"],
             "room": check_in["_has_result"]["room"],
             "check_in_time": current_time,
             "check_out_time": None,
@@ -120,6 +123,7 @@ def on_message(client, userdata, msg):
     except Exception as e:
         print(f"Error processing message: {e}")
 
+
     # If the message is not on the parking topic
     if msg.topic == f"{deployment_id}/room":
         log_check_in(data)
@@ -129,30 +133,9 @@ def on_message(client, userdata, msg):
         pass
 
 
-# Bring MQTT into global scope
+
+    # Bring MQTT into global scope
 mqtt_client = mqtt_start()
 
 while True:
     pass
-
-
-def read_from_csv(file_path):
-    rooms = {}
-    with open(file_path, mode="r") as file:
-        counter = csv.reader(file)
-        next(counter)
-        for row in counter:
-            room_id = row[0]
-            person_ids = row[1].split(",")
-            names = row[2].split(",")
-            rooms[room_id] = {"person_ids": person_ids, "names": names}
-    return rooms
-
-
-def roomlist(file_path):
-    rooms = read_from_csv(file_path)
-    for room_id, data in rooms.items():
-        print(f"Room {room_id}:")
-        if data["person_ids"] and data["names"]:
-            for person_ids, names in zip(data["person_ids"], data["names"]):
-                print(f"    - Person ID: {person_ids.strip()}, Name: {names.strip()}")

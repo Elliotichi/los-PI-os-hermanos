@@ -26,27 +26,30 @@
         </div>
 
         <div id="main-body-container">
-
             <div id="sidebar-container">
                 <div id="sidebar">
                     <h2>Common Searches</h2>
 
-                    <button id="btn_N9">N9</button>
-                    <button id="btn_N533">N533</button>
-                    <button id="btn_N527">N527</button>
+                    <button id="btn_N9" class="room_button">N9</button>
+                    <button id="btn_N533" class="room_button">N533</button>
+                    <button id="btn_N527" class="room_button">N527</button>
                 </div>
             </div>
 
-        <div id="list-container">
-            <ul id="report-list">
-                <% data.forEach(person => { %>
-                    <li><%=person.first_name%>,<%=person.last_name%>,<%=person.matriculation_no%></li>
-                    <% }) %>
-            </ul>
+            <div id="list-container">
+                <ul id="report-list">
+                    <% data.forEach(person=> { %>
+                        <li class="report-person">
+                            <%=person.first_name%> <%=person.last_name%> (<%=person.matriculation_no%>)
+                            <input type="checkbox" class="report-checkbox">
+
+                        </li>
+                        <% }) %>
+                </ul>
+
+            </div>
 
         </div>
-
-    </div>
 </body>
 
 </html>

@@ -64,9 +64,25 @@ def deployment_name_prompt():
 '''
 def main():
 	deployment_name, node_type = user_setup_prompts()
-
-	with open("config.txt", "w") as f:
-		f.write(deployment_name)
+ 
+	try:
+		with open(".env", "r") as f:
+			lines = f.readlines()
+	except FileNotFoundError:
+		print(".env file not found, exiting...")
+		exit()
+  
+	updated = False
+	for line_no in range(len(lines)):
+		if lines[line_no].startswith(f"DEPLOYMENT_NAME="):
+			lines[line_no] = f'DEPLOYMENT_NAME="{deployment_name}"\n'
+			updated = True
+  
+	if not updated:
+		lines.append(f'DEPLOYMENT_NAME="{deployment_name}"\n')
+  
+	with open(".env", 'w') as env_file:
+		env_file.writelines(lines)
 
 	if node_type == "Web Server":
 		try:

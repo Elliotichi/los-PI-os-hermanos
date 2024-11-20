@@ -2,20 +2,21 @@ import helper.mqtt as mqtt
 from helper.observation import Observation
 from helper.sensor import SensorNode
 from helper.mfrc522raw import MFRC522
-import spidev
-import RPi.GPIO
 import time
 import random
 import pymongo
 import datetime
+import os
+from dotenv import load_dotenv
 
 
 class room_node(SensorNode) :
+    load_dotenv()
     def __init__(self):
         super().__init__(MFRC522())
-        self.feature_of_interest = "Robert Gordon University"
-        self.room = None
         
+        
+        self.observed_property = "Occupancy levels"
 
         # Internal state variables used to streamline NFC reading
         # User might place card on the reader for too long, leading to an immediate check-in and check-out
@@ -23,45 +24,61 @@ class room_node(SensorNode) :
         self._card_present = False
 
         # used to connect to the database of existing students.
-        self.cluster = self.setup_mongo()["lospi-db"]["students"]
+        self.cluster = self.setup_mongo()["lospi-db"]
+        
+        self.cluster["sensor_information"].insert_one({
+            "sensor_name": self.name,
+            "feature_of_interest": self.feature_of_interest,
+            "observed_property":self.observed_property
+        })
 
 
     '''
     defines the room that the node is attached to 
     '''
     def calibrate(self):
-        self.room = input("What is the room number?")
-        self.observed_property = self.room+" occupancy"
+        self.feature_of_interest = input("Enter room number: ")+" occupancy"
+
 
     '''
     defines the observation loop
     calls the respective functions
     '''
     def observe(self):
-        while True:
-            status = self.poll_and_auth()
-            if status == self.sensor.MI_OK:
-                tag_data, validate = self.read_from_tag()
-                self.sensor.StopAuth()
+        try:
+            while True:
+                status = self.poll_and_auth()
+                if status == self.sensor.MI_OK:
+                    tag_data, validate = self.read_from_tag()
+                    self.sensor.StopAuth()
+                
+                    #if tag_data is not None:
+                        #data_to_send, validate = make_student_obj(tag_data)
+                    if validate == True:
+                        obs = Observation(
+                            _sender_id = self.name,
+                            _sender_name = self.name,
+                            _feature_of_interest = self.feature_of_interest,
+                            _observed_property = self.observed_property,
+                            _has_result = {
+                                "student":tag_data,
+                                "room":self.room, 
+                                "scan_time":datetime.datetime.now(), 
+                                "units": "string"}
+                        )
+        
+                        self.mqtt_client.publish(f"{self.deployment_id}/room", obs.to_mqtt_payload())
+                        
+        except KeyboardInterrupt:
+            print("Keyboard interrupt, exiting...")
+            exit()
             
-                #if tag_data is not None:
-                    #data_to_send, validate = make_student_obj(tag_data)
-                if validate == True:
-                    obs = Observation(
-                        _sender_id = self.name,
-                        _sender_name = self.name,
-                        _feature_of_interest = self.feature_of_interest,
-                        _observed_property = self.observed_property,
-                        _has_result = {"student":tag_data,"room":self.room, "scan_time":datetime.datetime.now(), "units": "string"}
-                    )
-    
-                    self.mqtt_client.publish(f"{self.deployment_id}/room", obs.to_mqtt_payload())
     '''
     establishes a mongoDB
     '''
     def setup_mongo(self):
         # DATABASE: set up a connection, tls enabled, etc
-        CONN_STRING = "mongodb+srv://visionstitch_dev:LosHermanos58@lospi.usv87.mongodb.net/?retryWrites=true&w=majority&appName=lospi"
+        CONN_STRING = os.getenv("CONN_STRING")
         cluster = pymongo.MongoClient(
             CONN_STRING,
             server_api=pymongo.server_api.ServerApi(
@@ -121,7 +138,7 @@ class room_node(SensorNode) :
             split_data = data.split(",")
             student_number = split_data[1]
             print(student_number)
-            student = self.cluster.find_one({"matriculation_no":student_number})
+            student = self.cluster["students"].find_one({"matriculation_no":student_number})
             print(student)
             validate = True
             return student, validate

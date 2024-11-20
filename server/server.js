@@ -1,4 +1,5 @@
 // Server config
+const dotenv = require("dotenv").config();
 const server = require("express")();
 const http = require("http").Server(server);
 const MongoClient = require('mongodb-legacy').MongoClient;
@@ -15,7 +16,7 @@ session = require("express-session")({
 });
 
 // 
-const uri = "mongodb+srv://visionstitch_dev:LosHermanos58@lospi.usv87.mongodb.net/?retryWrites=true&w=majority&appName=lospi";
+const uri = process.env.CONN_STRING;
 const client = new MongoClient(uri);
 const dbname = 'lospi-db';
 
@@ -82,7 +83,6 @@ server.get("/report", async (req, res) => {
 
 
     for await (const check_in of cursor) {
-        console.table(check_in);
         still_in_building.push(check_in);
     }
 
