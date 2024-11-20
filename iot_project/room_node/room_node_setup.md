@@ -20,4 +20,3 @@
 - #### enter the room number associated with the scanner
   - ##### E.G N533, N534
 - ####  scan RFID tag 
-
