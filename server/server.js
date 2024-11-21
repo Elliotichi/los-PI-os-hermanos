@@ -1,4 +1,5 @@
 // Server config
+const dotenv = require("dotenv").config();
 const server = require("express")();
 const http = require("http").Server(server);
 const MongoClient = require('mongodb-legacy').MongoClient;
@@ -15,7 +16,7 @@ session = require("express-session")({
 });
 
 // 
-const uri = "mongodb+srv://visionstitch_dev:LosHermanos58@lospi.usv87.mongodb.net/?retryWrites=true&w=majority&appName=lospi";
+const uri = process.env.CONN_STRING;
 const client = new MongoClient(uri);
 const dbname = 'lospi-db';
 
@@ -82,11 +83,10 @@ server.get("/report", async (req, res) => {
 
 
     for await (const check_in of cursor) {
-        console.table(check_in);
         still_in_building.push(check_in);
     }
 
-    return res.render("pages/report", { data: still_in_building })
+    return res.render("pages/report", { loggedin: true, data: still_in_building })
 })
 
 // Websockets
@@ -108,6 +108,23 @@ io.on("connection", (socket) => {
     socket.on("disconnect", () => {
         delete (connectedSockets[socket.id])
     });
+
+    socket.on("report checkin", async (name) => {
+        console.log("Attendance taken via webapp!")
+        try {
+            let filter = { "first_name": name.first_name, "last_name": name.last_name }
+            
+            let update = {
+                $set: {
+                    check_out_time: new Date()
+                }
+            };
+
+            console.log(`Updating with ${name.first_name} and ${name.last_name}`);
+            db.collection("check_ins").updateOne(filter, update);
+        } catch (ex) { console.log(ex); }
+    });
+
 }); // socket.io
 
 

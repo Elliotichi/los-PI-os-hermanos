@@ -22,19 +22,19 @@
         <div id="header-container">
             <header>
                 <nav class="navbar navbar-light bg-7b1a7b">
-                    <a id="title" class="navbar-brand" href="/">RGU - repo</a>
-                    <form id="Search" class="form-inline">
-                        <input id="Search_bar" class="form-control mr-sm-2" type="search" placeholder="Search"
-                            aria-label="Search">
-                    </form>
+                    <a id="title" class="navbar-brand" href="/"><img src="../media/rgu_logo.png" id="sitelogo"></a>
+                    <input type="text" id="searchbar" placeholder="Search...">
+
+
                     <% if (loggedin) { %>
-                        <a href="/report"><button id="btn_report" class="btn btn-outline-success" type="button">Report</button></a>
+                        <a href="/report"><button id="btn_report" class="btn btn-outline-success"
+                                type="button">Report</button></a>
                         <% } %>
                             <form action="/login" method="post">
 
-                                <input id="user" name="user" type="text" placeholder="user">
-                                <input id="pass" name="pass"  type="password" placeholder="pass">
-                                <input type="submit" id="log_in" class="btn btn-outline-success">
+                                <input id="user" name="user" type="text" placeholder="Username">
+                                <input id="pass" name="pass" type="password" placeholder="Password">
+                                <input type="submit" id="log_in" placeholder="Log In" class="btn btn-outline-success">
                             </form>
                 </nav>
 

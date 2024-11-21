@@ -13,7 +13,7 @@ except singleton.SingleInstanceException: exit()
 scripts = {
 	"Hub Node": "iot_project/hub_node/hub_node.py",  
 	"Berth Node" : "iot_project/room_script.py",
-	"Weather Node": "iot_project/parking.py", 
+	"Weather Node": "iot_project/parking_script.py", 
 	"Web Server": "server/server.js"
 	}
 
@@ -64,9 +64,25 @@ def deployment_name_prompt():
 '''
 def main():
 	deployment_name, node_type = user_setup_prompts()
-
-	with open("config.txt", "w") as f:
-		f.write(deployment_name)
+ 
+	try:
+		with open(".env", "r") as f:
+			lines = f.readlines()
+	except FileNotFoundError:
+		print(".env file not found, exiting...")
+		exit()
+  
+	updated = False
+	for line_no in range(len(lines)):
+		if lines[line_no].startswith(f"DEPLOYMENT_NAME="):
+			lines[line_no] = f'DEPLOYMENT_NAME="{deployment_name}"\n'
+			updated = True
+  
+	if not updated:
+		lines.append(f'DEPLOYMENT_NAME="{deployment_name}"\n')
+  
+	with open(".env", 'w') as env_file:
+		env_file.writelines(lines)
 
 	if node_type == "Web Server":
 		try:

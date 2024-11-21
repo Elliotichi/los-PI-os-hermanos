@@ -2,20 +2,21 @@ import helper.mqtt as mqtt
 from helper.observation import Observation
 from helper.sensor import SensorNode
 from helper.mfrc522raw import MFRC522
-import spidev
-import RPi.GPIO
 import time
 import random
 import pymongo
 import datetime
+import os
+from dotenv import load_dotenv
 
 
 class room_node(SensorNode) :
+    load_dotenv()
     def __init__(self):
         super().__init__(MFRC522())
-        self.feature_of_interest = "Robert Gordon University"
-        self.room = None
         
+        
+        self.observed_property = "Occupancy levels"
 
         # Internal state variables used to streamline NFC reading
         # User might place card on the reader for too long, leading to an immediate check-in and check-out
@@ -23,15 +24,21 @@ class room_node(SensorNode) :
         self._card_present = False
 
         # used to connect to the database of existing students.
-        self.cluster = self.setup_mongo()["lospi-db"]["students"]
+        self.cluster = self.setup_mongo()["lospi-db"]
+        
+        self.cluster["sensor_information"].insert_one({
+            "sensor_name": self.name,
+            "feature_of_interest": self.feature_of_interest,
+            "observed_property":self.observed_property
+        })
 
 
     '''
     defines the room that the node is attached to 
     '''
     def calibrate(self):
-        self.room = input("What is the room number?")
-        self.observed_property = self.room+" occupancy"
+        self.feature_of_interest = input("Enter room number: ")+" occupancy"
+
 
     '''
     defines the observation loop
@@ -66,7 +73,7 @@ class room_node(SensorNode) :
     '''
     def setup_mongo(self):
         # DATABASE: set up a connection, tls enabled, etc
-        CONN_STRING = "mongodb+srv://visionstitch_dev:LosHermanos58@lospi.usv87.mongodb.net/?retryWrites=true&w=majority&appName=lospi"
+        CONN_STRING = os.getenv("CONN_STRING")
         cluster = pymongo.MongoClient(
             CONN_STRING,
             server_api=pymongo.server_api.ServerApi(
@@ -126,7 +133,7 @@ class room_node(SensorNode) :
             split_data = data.split(",")
             student_number = split_data[1]
             print(student_number)
-            student = self.cluster.find_one({"matriculation_no":student_number})
+            student = self.cluster["students"].find_one({"matriculation_no":student_number})
             print(student)
             validate = True
             return student, validate

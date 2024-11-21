@@ -1,5 +1,6 @@
 node_modules
 *.pyc
 config.txt
+.env
 test_script.py
 eslint.config.mjs
