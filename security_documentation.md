@@ -19,7 +19,8 @@ Under Article 5, we will only collect data that is necessary, this means we will
 **Sign ins:** The sign in data will be used to create heatmaps of the busiest rooms in the university, this can show users free rooms without the need of having the user to go check the room themselves. The data will also be used for fire safety, fire marshals will be able to view names of personnel who were signed in, to ensure everyone’s safe
 
 ## FUTURE STEPS FOR BETTER SECURITY
-We would like to work with the university and have a form to sign that would opt the student into data collection, if the student does not opt in, the data would not be stored and instead only be used for safety (i.e. fire safety)
-We will also push regular updates/patches to the hubs and update the hubs OS to ensure that all possible steps are taken to minimise potential vulnerabilities. We would also ensure firewalls are installed and kept up to date and disable any unnecessary protocols and software.
-The hubs would be securely locked in each room, preventing physical accesses to unauthorised users and potentially hacking into the hubs.
+- We would like to work with the university and have a form to sign that would opt the student into data collection, if the student does not opt in, the data would not be stored and instead only be used for safety (i.e. fire safety)
+- Although the M0-tier Atlas cluster was used for the prototype, the premium tiers offer encryption, if it were used instead of a local DB/MS (e.g. Redis)
+- We will also push regular updates/patches to the hubs and update the hubs OS to ensure that all possible steps are taken to minimise potential vulnerabilities. We would also ensure firewalls are installed and kept up to date and disable any unnecessary protocols and software.
+- The hubs would be securely locked in each room, preventing physical accesses to unauthorised users and potentially hacking into the hubs.
 

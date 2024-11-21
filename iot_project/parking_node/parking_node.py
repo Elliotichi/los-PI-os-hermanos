@@ -91,9 +91,9 @@ class ParkingNode(SensorNode):
             executor = ThreadPoolExecutor(max_workers=1)
 
             while True:
-                # dist = self.ultrasonic_measure()
-                # Simulate a car for now
-                dist = 20
+                # Measure distance of an approaching object
+                dist = self.ultrasonic_measure()
+                 
 
                 # If a car has appeared and stopped at the barrier, start the registration reading process
                 if dist < 150 and self.state == CarSensorState.NO_CAR:
@@ -219,7 +219,7 @@ class ParkingNode(SensorNode):
 
     def ultrasonic_measure(self):
         GPIO.output(GPIO_TRIG, GPIO.HIGH)
-        time.sleep(0.05)
+        time.sleep(0.1)
         GPIO.output(GPIO_TRIG, GPIO.LOW)
 
         while GPIO.input(self.GPIO_ECHO) == 0:
