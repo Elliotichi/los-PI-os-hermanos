@@ -112,19 +112,6 @@ def on_connect(client, userdata, flags, rc):
         client.subscribe(f"{deployment_id}/room")
         client.subscribe(f"{deployment_id}/parking")
 
-        log_check_in(
-            {
-                "_has_result": {
-                    "student": {
-                        "first_name": "Robert",
-                        "last_name": "Gordon",
-                        "matriculation_no": "87654321",
-                    },
-                    "room": "N533",
-                }
-            }
-        )
-
 
 def on_message(client, userdata, msg):
     """
