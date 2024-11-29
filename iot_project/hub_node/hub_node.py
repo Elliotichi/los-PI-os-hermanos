@@ -24,7 +24,7 @@ cluster = pymongo.MongoClient(
 
 # Two collections - one for room node check-ins & one for parking
 check_ins_collection = cluster["lospi-db"]["check_ins"]
-parking_check_ins_collection = cluster["lospi-db"]["parking_check_ins"]
+parking_check_ins_collection = cluster["lospi-db"]["parking"]
 
 
 def log_parking_check_in(check_in):
@@ -32,6 +32,7 @@ def log_parking_check_in(check_in):
     Logs a parking check-in - called when a message is received on the "parking" topic
     :param check_in: a dictionary containing the MQTT payload
     """
+    print("Received a parking check-in")
     current_time = datetime.datetime.now()
     filter = {
         "registration": check_in["_has_result"]["registration"],
@@ -52,7 +53,7 @@ def log_parking_check_in(check_in):
             "check_out_time": None,
         }
 
-        insert_res = check_ins_collection.insert_one(new_check_in)
+        insert_res = parking_check_ins_collection.insert_one(new_check_in)
 
 
 def log_check_in(check_in):
@@ -133,9 +134,14 @@ def on_message(client, userdata, msg):
 
     # Bring MQTT into global scope
 
+log_parking_check_in(
+    {
+        "hi" : "hiya", 
+        "_has_result" : {"registration":"AB25 5BZ"},
+    }
+)
 
 mqtt_client = mqtt_start()
-
 
 while True:
     pass

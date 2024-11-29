@@ -16,7 +16,7 @@ import imutils
 import time
 import os
 import queue
-import RPi.GPIO
+import RPi.GPIO as GPIO
 import tracemalloc
 import pymongo
 import datetime
