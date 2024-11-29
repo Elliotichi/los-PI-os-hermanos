@@ -106,7 +106,7 @@ class ParkingNode(SensorNode):
                      #   self.process_image, self.sensor.capture_array("main")
                     #)
 
-                elif dist > self.distance_threshold and self.state == CarSensorState.CAR:
+                elif dist > self.dist_threshold and self.state == CarSensorState.CAR:
                     self.state = CarSensorState.NO_CAR
 
                 # See if there are any results waiting for MQTT send
