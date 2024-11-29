@@ -29,14 +29,14 @@ class CarSensorState(Enum):
     CAR = 1
     NO_CAR = 0
 
+GPIO_TRIG = 4
+GPIO_ECHO = 17
 
 class ParkingNode(SensorNode):
     """
     Combines an ultrasonic sensor and camera: on approach then take registration photo, do preprocessing & OCR
     """
     load_dotenv()
-    GPIO_TRIG = 4
-    GPIO_ECHO = 17
     CONN_STRING = os.getenv("CONN_STRING")
 
     def __init__(self):
