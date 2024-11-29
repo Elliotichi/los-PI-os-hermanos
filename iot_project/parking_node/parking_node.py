@@ -10,16 +10,17 @@ from dotenv import load_dotenv
 import easyocr
 import numpy as np
 
-# import RPi.GPIO as GPIO
 import cv2
 import imutils
 import time
 import os
 import queue
-import RPi.GPIO as GPIO
+import lgpio
 import tracemalloc
 import pymongo
 import datetime
+
+lgpio.init()
 
 class CarSensorState(Enum):
     """
@@ -75,8 +76,9 @@ class ParkingNode(SensorNode):
         Calibrate the parking node with a distance threshold for approach
         """
         self.dist_threshold = float(input("Vehicle approach threshold: "))
-        GPIO.setup(GPIO_TRIG, GPIO.OUT)
-        GPIO.setup(GPIO_ECHO, GPIO.IN)
+        lgpio.setup(GPIO_TRIG, lgpio.OUT)
+        lgpio.setup(GPIO_ECHO, lgpio.IN)
+
 
 
     """
@@ -218,14 +220,14 @@ class ParkingNode(SensorNode):
         return result
 
     def ultrasonic_measure(self):
-        GPIO.output(GPIO_TRIG, GPIO.HIGH)
+        lgpio.output(GPIO_TRIG, lgpio.HIGH)
         time.sleep(0.1)
-        GPIO.output(GPIO_TRIG, GPIO.LOW)
+        lgpio.output(GPIO_TRIG, lgpio.LOW)
 
-        while GPIO.input(self.GPIO_ECHO) == 0:
+        while lgpio.input(self.GPIO_ECHO) == 0:
             start_time = time.time()
 
-        while GPIO.input(self.GPIO_ECHO) == 1:
+        while lgpio.input(self.GPIO_ECHO) == 1:
             finish_time = time.time()
 
         return round(((finish_time - start_time) * 1750), 0)
