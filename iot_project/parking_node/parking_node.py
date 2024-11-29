@@ -20,7 +20,7 @@ import tracemalloc
 import pymongo
 import datetime
 
-lgpio.init()
+
 
 class CarSensorState(Enum):
     """
