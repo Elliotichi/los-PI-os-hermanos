@@ -141,6 +141,8 @@ class ParkingNode(SensorNode):
         original_photo = cv2.imread("sample_reg.png")
         edges = self.image_preprocess(original_photo)
         plate_contours = self.get_image_contours(edges)
+        
+        print("Trying to get bitmask...")
         bitmask = self.get_bitmask(plate_contours)
         registration = self.image_ocr(bitmask, original_photo)
         self.queue.put(registration)
@@ -164,7 +166,7 @@ class ParkingNode(SensorNode):
         Extracts and approximates edge contours to find the large rectangular shape
         :param edges: the result of a cv2.Canny call - edge-detected image
         """
-        print("GEtting contours")
+        print("Getting contours")
         # Extract the set of contours and store the 10 largest (ignore the junk/small shapes)
         contours = imutils.grab_contours(
             cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
