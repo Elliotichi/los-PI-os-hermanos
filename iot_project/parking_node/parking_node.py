@@ -94,7 +94,8 @@ class ParkingNode(SensorNode):
             while True:
                 # Measure distance of an approaching object
                 dist = self.ultrasonic_measure()
-                 
+                print(f"Distance: {dist}")
+                print(f"State is {self.state}")
 
                 # If a car has appeared and stopped at the barrier, start the registration reading process
                 if dist < self.dist_threshold and self.state == CarSensorState.NO_CAR:
