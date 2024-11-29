@@ -134,13 +134,6 @@ def on_message(client, userdata, msg):
 
     # Bring MQTT into global scope
 
-log_parking_check_in(
-    {
-        "hi" : "hiya", 
-        "_has_result" : {"registration":"AB25 5BZ"},
-    }
-)
-
 mqtt_client = mqtt_start()
 
 while True:
