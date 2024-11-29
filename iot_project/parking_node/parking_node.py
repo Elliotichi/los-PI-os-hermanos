@@ -1,7 +1,7 @@
 from concurrent.futures import ThreadPoolExecutor
 from enum import Enum
 
-
+from gpiozero import DistanceSensor 
 from helper.observation import Observation
 from helper.sensor import SensorNode
 from picamera2 import Picamera2
@@ -44,6 +44,7 @@ class ParkingNode(SensorNode):
         """
         Invokes superclass constructor, connects to database
         """
+        self.distSensor = DistanceSensor(echo=GPIO_ECHO, trigger=GPIO_TRIG)
         super().__init__(Picamera2())
         self.observed_property = "Car registration"
         self.state = CarSensorState.NO_CAR
@@ -76,8 +77,6 @@ class ParkingNode(SensorNode):
         Calibrate the parking node with a distance threshold for approach
         """
         self.dist_threshold = float(input("Vehicle approach threshold: "))
-        lgpio.setup(GPIO_TRIG, lgpio.OUT)
-        lgpio.setup(GPIO_ECHO, lgpio.IN)
 
 
 
@@ -220,6 +219,9 @@ class ParkingNode(SensorNode):
         return result
 
     def ultrasonic_measure(self):
+        dist = self.distSensor.distance * 100  # convert to cm
+        print(f"Distance: {dist:.1f} cm")
+        """
         lgpio.output(GPIO_TRIG, lgpio.HIGH)
         time.sleep(0.1)
         lgpio.output(GPIO_TRIG, lgpio.LOW)
@@ -231,3 +233,4 @@ class ParkingNode(SensorNode):
             finish_time = time.time()
 
         return round(((finish_time - start_time) * 1750), 0)
+        """
