@@ -142,9 +142,9 @@ class ParkingNode(SensorNode):
         edges = self.image_preprocess(original_photo)
         plate_contours = self.get_image_contours(edges)
         
-        print("Trying to get bitmask...")
         bitmask = self.get_bitmask(plate_contours, original_photo)
-        registration = self.image_ocr(bitmask, original_photo)
+        registration = self.image_ocr(bitmask)
+        print(f"Registration is {registration}")
         self.queue.put(registration)
 
 
