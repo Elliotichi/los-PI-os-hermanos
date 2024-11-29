@@ -135,23 +135,15 @@ class ParkingNode(SensorNode):
         Performs the various stages of image processing & recognition
         :param original_photo: a pixel array taken from a PiCamera2
         """
-        tracemalloc.start()
-        start_snap = tracemalloc.take_snapshot()
+        print("Processing a registration")
 
+        original_photo = cv2.imread("sample_reg.png")
         edges = self.image_preprocess(original_photo)
         plate_contours = self.get_image_contours(edges)
         bitmask = self.get_bitmask(plate_contours)
         registration = self.image_ocr(bitmask, original_photo)
         self.queue.put(registration)
 
-        end_snap = tracemalloc.take_snapshot()
-        start_stats = start_snap.statistics("lineno")
-        end_stats = end_snap.statistics("lineno")
-        memory_diff = end_snap.compare_to(start_snap, "lineno")
-        total_allocated = sum(stat.size_diff for stat in memory_diff)
-        print(
-            f"Total memory allocated between snaps: {total_allocated / 1024**2:.2f} MB"
-        )
 
     def image_preprocess(self, photo):
         """
