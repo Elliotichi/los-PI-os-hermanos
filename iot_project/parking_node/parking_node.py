@@ -123,6 +123,7 @@ class ParkingNode(SensorNode):
                     self.mqtt_client.publish(f"{self.deployment_id}/parking", obs.to_mqtt_payload())
 
                 except queue.Empty:
+                    print("Nothing in queue...")
                     pass
 
                 time.sleep(1)
