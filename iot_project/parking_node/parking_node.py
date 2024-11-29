@@ -163,6 +163,7 @@ class ParkingNode(SensorNode):
         Extracts and approximates edge contours to find the large rectangular shape
         :param edges: the result of a cv2.Canny call - edge-detected image
         """
+        print("GEtting contours")
         # Extract the set of contours and store the 10 largest (ignore the junk/small shapes)
         contours = imutils.grab_contours(
             cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
@@ -190,6 +191,7 @@ class ParkingNode(SensorNode):
         :param plate_contour: the contour corresponding to the license plate
         :param original_image: the original pixel array captured from PiCamera2
         """
+        print("Getting bitmask")
         if plate_contour is not None:
             print("Found a rectangular contour!")
             mask = np.zeros_like(original_image)
@@ -203,6 +205,7 @@ class ParkingNode(SensorNode):
         Performs OCR image detection
         :param bitmask: pixel array corresponding to the preprocessed registration plate
         """
+        print("Doing OCR")
         # OCR to get the text of the registration
         reader = easyocr.Reader(["en"])
         result = reader.readtext(bitmask)
