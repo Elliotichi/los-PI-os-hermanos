@@ -97,13 +97,13 @@ class ParkingNode(SensorNode):
                  
 
                 # If a car has appeared and stopped at the barrier, start the registration reading process
-                if dist < 150 and self.state == CarSensorState.NO_CAR:
+                if dist < self.dist_threshold and self.state == CarSensorState.NO_CAR:
                     print("Detected a car!")
                     self.state = CarSensorState.CAR
 
-                    executor.submit(
-                        self.process_image, self.sensor.capture_array("main")
-                    )
+                    #executor.submit(
+                     #   self.process_image, self.sensor.capture_array("main")
+                    #)
 
                 elif dist > 150 and self.state == CarSensorState.CAR:
                     self.state = CarSensorState.NO_CAR
