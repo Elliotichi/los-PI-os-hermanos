@@ -148,7 +148,7 @@ class ParkingNode(SensorNode):
         reader = easyocr.Reader(["en"])
         result = reader.readtext(bitmask)
         
-        sprint(f"Registration is {result}")
+        print(f"Registration is {result}")
         self.queue.put(result)
 
 
