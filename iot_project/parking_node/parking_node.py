@@ -143,9 +143,13 @@ class ParkingNode(SensorNode):
         plate_contours = self.get_image_contours(edges)
         
         bitmask = self.get_bitmask(plate_contours, original_photo)
-        registration = self.image_ocr(bitmask)
-        print(f"Registration is {registration}")
-        self.queue.put(registration)
+        #registration = self.image_ocr(bitmask)
+        
+        reader = easyocr.Reader(["en"])
+        result = reader.readtext(bitmask)
+        
+        sprint(f"Registration is {result}")
+        self.queue.put(result)
 
 
     def image_preprocess(self, photo):
