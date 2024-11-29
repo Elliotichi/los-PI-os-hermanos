@@ -75,8 +75,8 @@ class ParkingNode(SensorNode):
         Calibrate the parking node with a distance threshold for approach
         """
         self.dist_threshold = float(input("Vehicle approach threshold: "))
-        # GPIO.setup(GPIO_TRIG, GPIO.OUT)
-        # GPIO.setup(GPIO_ECHO, GPIO.IN)
+        GPIO.setup(GPIO_TRIG, GPIO.OUT)
+        GPIO.setup(GPIO_ECHO, GPIO.IN)
 
 
     """
