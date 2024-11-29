@@ -101,7 +101,7 @@ class ParkingNode(SensorNode):
                     self.state = CarSensorState.CAR
 
                     executor.submit(
-                        self.process_image, self.sensor.capture_array("main")
+                        self.process_image, cv2.imread("sample_reg.png")
                     )
 
                 elif dist > self.dist_threshold and self.state == CarSensorState.CAR:
