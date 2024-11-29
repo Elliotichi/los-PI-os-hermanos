@@ -221,6 +221,7 @@ class ParkingNode(SensorNode):
     def ultrasonic_measure(self):
         dist = self.distSensor.distance * 100  # convert to cm
         print(f"Distance: {dist:.1f} cm")
+        return dist
         """
         lgpio.output(GPIO_TRIG, lgpio.HIGH)
         time.sleep(0.1)
