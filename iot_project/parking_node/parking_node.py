@@ -101,7 +101,7 @@ class ParkingNode(SensorNode):
                     self.state = CarSensorState.CAR
 
                     executor.submit(
-                        self.process_image, cv2.imread("sample_reg.png")
+                        self.process_image, self.sensor.capture_array("main")
                     )
 
                 elif dist > self.dist_threshold and self.state == CarSensorState.CAR:
@@ -136,8 +136,6 @@ class ParkingNode(SensorNode):
         :param original_photo: a pixel array taken from a PiCamera2
         """
         print("Processing a registration")
-
-        original_photo = cv2.imread("sample_reg.png")
         edges = self.image_preprocess(original_photo)
         plate_contours = self.get_image_contours(edges)
         
@@ -156,7 +154,7 @@ class ParkingNode(SensorNode):
         Processes the image with blur and edge detection
         :param photo: A pixel array
         """
-        img = cv2.imread("sample_reg.png")
+        img = photo
 
         # Tidy up the image: blurring and edge detection
         blurred = cv2.GaussianBlur(img, (5, 5), 0)
